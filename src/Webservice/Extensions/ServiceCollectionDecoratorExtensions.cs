@@ -25,11 +25,11 @@ namespace Webservice.Extensions
                 {
                     if (decoratorOptions.Order.Any())
                     {
-                        serviceCollection.AddScoped(result, GetImplementationFactory<object>()(result, previous));
+                        serviceCollection.AddScoped(result, GetImplementationFactory<object>(result, previous));
                     }
                     else
                     {
-                        serviceCollection.AddScoped(GetImplementationFactory<TInterface>()(result, previous));
+                        serviceCollection.AddScoped(GetImplementationFactory<TInterface>(result, previous));
                     }
                     previous = result;
                 }
@@ -38,8 +38,8 @@ namespace Webservice.Extensions
             return serviceCollection;
         }
 
-        private static Func<Type, Type, Func<IServiceProvider, TInterface>> GetImplementationFactory<TInterface>()
-            => (current, previous) => provider => (TInterface)ActivatorUtilities.CreateInstance(
+        private static Func<IServiceProvider, TInterface> GetImplementationFactory<TInterface>(Type current, Type previous)
+            => provider => (TInterface)ActivatorUtilities.CreateInstance(
                 provider,
                 current,
                 provider.GetService(previous));
